@@ -8,7 +8,7 @@
 bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE hWorkerFactory, _In_ void* localPayloadAddress, _In_ size_t payloadSize) {
 
 	NTSTATUS status = ERROR_SUCCESS;				WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo = { 0 };
-	uint32_t oldProtect = 0;						uint32_t threadMinimumCount = 0;
+	uint32_t oldProtect = 0;					uint32_t threadMinimumCount = 0;
 	
 	fnNtSetInformationWorkerFactory pNtSetInformationWorkerFactory = nullptr;		
 	fnNtQueryInformationWorkerFactory pNtQueryInformationWorkerFactory = nullptr;
