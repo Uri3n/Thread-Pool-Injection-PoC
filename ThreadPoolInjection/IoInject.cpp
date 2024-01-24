@@ -7,8 +7,8 @@
 bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
 	HANDLE hJob = NULL;				NTSTATUS status = 0x00;
-	void* remoteMemory = nullptr;	PFULL_TP_JOB pFullTpJob = { 0 };
-	size_t regionSize = NULL;		JOBOBJECT_ASSOCIATE_COMPLETION_PORT completionPort = { 0 };
+	void* remoteMemory = nullptr;			PFULL_TP_JOB pFullTpJob = { 0 };
+	size_t regionSize = NULL;			JOBOBJECT_ASSOCIATE_COMPLETION_PORT completionPort = { 0 };
 
 
 
