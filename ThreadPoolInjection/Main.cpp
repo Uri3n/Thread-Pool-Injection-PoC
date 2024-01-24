@@ -37,7 +37,7 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 	PPROCESS_HANDLE_SNAPSHOT_INFORMATION pProcessSnapshotInfo = nullptr;
 	PPUBLIC_OBJECT_TYPE_INFORMATION objectInfo = nullptr;
 
-	uint32_t totalHandles = NULL;	uint32_t handleInfoSize = NULL;
+	uint32_t totalHandles = NULL;		uint32_t handleInfoSize = NULL;
 	NTSTATUS status = 0x00;			HANDLE duplicatedHandle = NULL;
 	bool handleFound = false;		uint32_t objectTypeReturnLen = NULL;
 
@@ -194,7 +194,7 @@ HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) 
 
 	uint32_t PidArray[2048] = { 0 };		wchar_t moduleBaseName[250] = { 0 };
 	uint32_t sModulebaseName = 0;			uint32_t bytesReturned = 0;
-	uint32_t bytesNeeded = 0;				uint32_t totalNumberOfPids = 0;
+	uint32_t bytesNeeded = 0;			uint32_t totalNumberOfPids = 0;
 
 	HANDLE hProcess = nullptr;
 	HMODULE hModule = nullptr;
