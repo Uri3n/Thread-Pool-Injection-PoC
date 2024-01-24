@@ -6,9 +6,9 @@
 bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void* payloadAddress, _In_ HANDLE targetProcess) {
 
 	WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo = { 0 };				PFULL_TP_TIMER remoteTpTimer = nullptr;
-	fnNtQueryInformationWorkerFactory pQueryWorkerFactory = nullptr;		PFULL_TP_TIMER pFullTpTimer = nullptr;
-	signed long long int timeOutInterval = -10000000;						LARGE_INTEGER dueTime = { 0 };
-	fnNtSetTimer2 pNtSetTimer2 = nullptr;									NTSTATUS status = ERROR_SUCCESS;
+	fnNtQueryInformationWorkerFactory pQueryWorkerFactory = nullptr;			PFULL_TP_TIMER pFullTpTimer = nullptr;
+	signed long long int timeOutInterval = -10000000;					LARGE_INTEGER dueTime = { 0 };
+	fnNtSetTimer2 pNtSetTimer2 = nullptr;							NTSTATUS status = ERROR_SUCCESS;
 
 
 
