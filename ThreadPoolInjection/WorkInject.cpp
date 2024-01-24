@@ -124,10 +124,10 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 
 bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hWorkerFactory) {
 
-	PFULL_TP_POOL pFullTpPoolBuffer = nullptr;			fnNtQueryInformationWorkerFactory pNtQueryInformationWorkerFactory = nullptr;
-	size_t bytesRead = 0;								WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo = { 0 };
+	PFULL_TP_POOL pFullTpPoolBuffer = nullptr;		fnNtQueryInformationWorkerFactory pNtQueryInformationWorkerFactory = nullptr;
+	size_t bytesRead = 0;					WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo = { 0 };
 	LIST_ENTRY* taskQueueHighPriorityList = nullptr;	PFULL_TP_WORK pFullTpWork = nullptr;
-	PFULL_TP_WORK pRemoteFullTpWork = nullptr;			LIST_ENTRY* pRemoteWorkItemTaskNode = nullptr;
+	PFULL_TP_WORK pRemoteFullTpWork = nullptr;		LIST_ENTRY* pRemoteWorkItemTaskNode = nullptr;
 	
 
 	NTSTATUS status = 0x00;
