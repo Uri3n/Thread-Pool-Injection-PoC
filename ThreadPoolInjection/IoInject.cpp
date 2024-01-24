@@ -242,11 +242,11 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 
 bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
-	wchar_t fullFilePath[MAX_PATH] = { 0 };						wchar_t tempPath[MAX_PATH] = { 0 };
-	HANDLE hFile = nullptr;										PFULL_TP_IO pTpIo = nullptr;
-	void* pRemoteTpIo = nullptr;								IO_STATUS_BLOCK ioStatusBlock = { 0 };
+	wchar_t fullFilePath[MAX_PATH] = { 0 };				wchar_t tempPath[MAX_PATH] = { 0 };
+	HANDLE hFile = nullptr;						PFULL_TP_IO pTpIo = nullptr;
+	void* pRemoteTpIo = nullptr;					IO_STATUS_BLOCK ioStatusBlock = { 0 };
 	fnNtSetInformationFile pNtSetInformationFile = nullptr;		FILE_COMPLETION_INFORMATION fileCompletionInfo = { 0 };
-	NTSTATUS status = 0x00;										uint32_t bytesWritten = NULL;
+	NTSTATUS status = 0x00;						uint32_t bytesWritten = NULL;
 	OVERLAPPED overlapped = { 0 };
 
 
@@ -406,14 +406,14 @@ void _RtlInitUnicodeString(OUT PUNICODE_STRING UsStruct, IN OPTIONAL PCWSTR Buff
 bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
 	// Local Variables
-	NTSTATUS status = 0x00;						fnNtAlpcCreatePort pNtAlpcCreatePort = nullptr;
+	NTSTATUS status = 0x00;					fnNtAlpcCreatePort pNtAlpcCreatePort = nullptr;
 	HANDLE hTempApcPort = nullptr;				fnTpAllocAlpcCompletion pTpAllocAlpcCompletion = nullptr;
 	void* remoteTpAlpc = nullptr;				fnNtAlpcSetInformation pNtAlpcSetInformation = nullptr;
-	std::string alpcMessageString = MY_MESSAGE;	fnNtAlpcConnectPort pNtAlpcConnectPort = nullptr;
+	std::string alpcMessageString = MY_MESSAGE;		fnNtAlpcConnectPort pNtAlpcConnectPort = nullptr;
 
 
-	UNICODE_STRING usAlpcPortName = { 0 };		PFULL_TP_ALPC pFullTpAlpc = nullptr;		
-	OBJECT_ATTRIBUTES objectAttributes = { 0 };	ALPC_PORT_ATTRIBUTES alpcPortAttributes = { 0 };
+	UNICODE_STRING usAlpcPortName = { 0 };			PFULL_TP_ALPC pFullTpAlpc = nullptr;		
+	OBJECT_ATTRIBUTES objectAttributes = { 0 };		ALPC_PORT_ATTRIBUTES alpcPortAttributes = { 0 };
 	HANDLE hRealApcPort = nullptr;				
 
 	OBJECT_ATTRIBUTES clientAlpcAttributes = { 0 };
