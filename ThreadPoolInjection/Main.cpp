@@ -67,7 +67,7 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 		goto FUNC_END;
 	}
 
-	handleInfoSize = sizeof(PROCESS_HANDLE_SNAPSHOT_INFORMATION) + (totalHandles * sizeof(PROCESS_HANDLE_TABLE_ENTRY_INFO));
+	handleInfoSize = sizeof(PROCESS_HANDLE_SNAPSHOT_INFORMATION) + ((totalHandles + 15) * sizeof(PROCESS_HANDLE_TABLE_ENTRY_INFO));
 
 
 
