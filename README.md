@@ -1,7 +1,7 @@
 # Thread-Pool-Injection-PoC
 Proof of concept code for thread pool based process injection in Windows.
 
-Credit goes to 0xDeku from the SafeBreach Labs for publishing the original research
+Credit goes to 0xDeku from the SafeBreach Labs team for publishing the original research
 for this technique.
 0xDeku's research and code:
 https://www.safebreach.com/blog/process-injection-using-windows-thread-pools
