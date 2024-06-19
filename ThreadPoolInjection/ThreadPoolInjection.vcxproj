@@ -128,17 +128,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="IoInject.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="TimerInject.cpp" />
-    <ClCompile Include="WorkInject.cpp" />
+    <ClCompile Include="src\IoInject.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Process.cpp" />
+    <ClCompile Include="src\TimerInject.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
+    <ClCompile Include="src\WorkInject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defs.hpp" />
-    <ClInclude Include="functionPtrs.hpp" />
-    <ClInclude Include="injection.hpp" />
-    <ClInclude Include="IoInject.hpp" />
-    <ClInclude Include="structures.hpp" />
+    <ClInclude Include="include\defs.hpp" />
+    <ClInclude Include="include\functionPtrs.hpp" />
+    <ClInclude Include="include\injection.hpp" />
+    <ClInclude Include="include\Main.hpp" />
+    <ClInclude Include="include\Process.hpp" />
+    <ClInclude Include="include\structures.hpp" />
+    <ClInclude Include="include\Utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,33 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IoInject.cpp">
+    <ClCompile Include="src\IoInject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimerInject.cpp">
+    <ClCompile Include="src\TimerInject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorkInject.cpp">
+    <ClCompile Include="src\WorkInject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="injection.hpp">
+    <ClInclude Include="include\injection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="defs.hpp">
+    <ClInclude Include="include\defs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="functionPtrs.hpp">
+    <ClInclude Include="include\functionPtrs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="structures.hpp">
+    <ClInclude Include="include\structures.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IoInject.hpp">
+    <ClInclude Include="include\Main.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Process.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
