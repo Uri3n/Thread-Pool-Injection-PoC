@@ -105,8 +105,6 @@ bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, 
 }
 
 
-
-
 bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
 	fnNtAssociateWaitCompletionPacket pNtAssociateWaitCompletionPacket = nullptr;
@@ -370,11 +368,6 @@ void _RtlInitUnicodeString(OUT PUNICODE_STRING UsStruct, IN OPTIONAL PCWSTR Buff
 	else UsStruct->Length = UsStruct->MaximumLength = 0;
 }
 
-//
-// ALPC or Advanced Local Procedure Call objects are kernel objects that facilitate inter-process communication.
-// They are very similar to named pipes, but operate on a "connection" basis rather than
-// named pipes which are often connectionless.
-//
 
 bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 	// Local Variables
