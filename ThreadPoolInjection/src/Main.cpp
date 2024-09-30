@@ -1,27 +1,26 @@
 #include "../include/Main.hpp"
 
 
-
 int wmain(int argc, wchar_t** argv) {
-
-
 	if (argc < 4) {
-
-		std::cout << "Usage: \n" <<
-			"1: [Target Process]\n" <<
-			"2: [Injection Type] - Options: \"/ioport\", \"/timer\", \"/workerfactory\"\n\n" <<
-			"3: [Subtypes] - Options: \n\t{\"work\", \"startroutine\"}: for /workerfactory\n" <<
-			"\t{\"wait\", \"jobobject\", \"alpc\", \"direct\", \"tpio\"}: for /ioport\n" <<
-			"\t{\"tptimer\"}: for /timer\n";
+		std::cout << "Usage: \n"                                                               <<
+			"1: [Target Process (name, not PID)]\n"                                            <<
+			"2: [Injection Type] - Options: \"/ioport\", \"/timer\", \"/workerfactory\"\n\n"   <<
+			"3: [Subtypes] - Options: \n\t{\"work\", \"startroutine\"}: for /workerfactory\n"  <<
+			"\t{\"wait\", \"jobobject\", \"alpc\", \"direct\", \"tpio\"}: for /ioport\n"       <<
+			"\t{\"tptimer\"}: for /timer\n"                                                    <<
+			"\nEXAMPLE: ThreadPoolInjection.exe notepad.exe /ioport alpc\n";                       
 		
-		return EXIT_FAILURE;
+		return EXIT_SUCCESS;
 	}
-	
+		
 
 	HandleHijackClass handleType;
-
-	switch ( *(reinterpret_cast<uint64_t*>(argv[2])) ) {
-
+	
+	// note from the repo owner from the future:
+	// I have absolutely zero clue why the fucK I did a string comparison this way,
+	// this makes me cringe so hard.... I think I thought it would make me look cool/skilled or something, LOL
+	switch (*(reinterpret_cast<uint64_t*>(argv[2]))) {
 		case ARGUMENT_IOPORT:
 			handleType = TpIoPort;
 			break;
@@ -41,7 +40,6 @@ int wmain(int argc, wchar_t** argv) {
 	
 
 	Process targetProcess(argv[1], handleType);
-
 	if (!targetProcess.init()) {
 		return EXIT_FAILURE;
 	}
@@ -52,11 +50,8 @@ int wmain(int argc, wchar_t** argv) {
 		}
 	}
 
-
-
 	bool succeeded = false;
 	switch (*(reinterpret_cast<uint64_t*>(argv[3]))) {
-
 		case SUBTYPE_WORKERFACTORY_STARTROUTINE:
 			succeeded = targetProcess.ProcessWorkerFactoryInject();
 			break;
@@ -93,12 +88,10 @@ int wmain(int argc, wchar_t** argv) {
 			std::wcerr << L"\n{!!} Invalid Injection Subtype Sent: " << argv[3] << std::endl;
 			break;
 	}
-
 	
 	if (!succeeded) {
 		return EXIT_FAILURE;
 	}
-
 
 	std::cout << "{+} Finished successfully." << std::endl;
 	return EXIT_SUCCESS;

