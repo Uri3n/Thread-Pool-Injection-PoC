@@ -2,11 +2,9 @@
 #include <Windows.h>
 #include <iostream>
 #include <stdint.h>
-#include "functionPtrs.hpp"
-#include "structures.hpp"
-#include "defs.hpp"
-
-
+#include "FunctionPtrs.hpp"
+#include "Structures.hpp"
+#include "Defs.hpp"
 
 //IO
 bool InjectViaJobCallback(_In_ HANDLE targetProcess, _In_ void* payloadAddress, _In_ HANDLE hIoPort);

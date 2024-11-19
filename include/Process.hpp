@@ -1,26 +1,20 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
-#include "defs.hpp"
-#include "injection.hpp"
+#include "Defs.hpp"
+#include "Injection.hpp"
 #include "Utils.hpp"
 
-
 class Process {
-
 private:
-
-	wchar_t*          name           = nullptr;
-	void*             remotePayload  = nullptr;
-	HANDLE            handleToHijack = nullptr;
-	HANDLE            processHandle  = nullptr;
-	bool              isInitialized  = false;
-	uint32_t          PID            = 0;
+	void*    remotePayload  = nullptr;
+	HANDLE   handleToHijack = nullptr;
+	HANDLE   processHandle  = nullptr;
+	bool     isInitialized  = false;
+	uint32_t PID            = 0;
 
 	HandleHijackClass hijackType;
-
 public:
-
 	bool injectShellcode();
 	bool ProcessAlpcInject();
 	bool ProcessJobInject();
@@ -32,7 +26,7 @@ public:
 	bool ProcessWorkerFactoryInject();
 	bool init();
 
-
 	~Process();
-	Process(wchar_t* processName, HandleHijackClass hijackType) : name(processName), hijackType(hijackType) {}
+	Process(uint32_t _PID, HandleHijackClass hijackType)
+		: PID(_PID), hijackType(hijackType) {}
 };

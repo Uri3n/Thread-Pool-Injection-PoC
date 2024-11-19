@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <winternl.h>
-#include "structures.hpp"
+#include "Structures.hpp"
 
 typedef NTSTATUS(NTAPI* fnNtQueryInformationProcess)(
 

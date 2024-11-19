@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <stdint.h>
 
-
 typedef struct _PROCESS_HANDLE_TABLE_ENTRY_INFO
 {
     HANDLE HandleValue;

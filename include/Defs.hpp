@@ -4,7 +4,6 @@
 #define WIN32_ERR(API) std::cout << "{!!} " << #API << " failed with error: " << GetLastError() << std::endl;
 #define NTAPI_ERR(API, status) std::cout << "{!!} " << #API << " failed with status: " << std::hex << status << std::endl;
 
-
 // Worker Factory
 #define WORKER_FACTORY_RELEASE_WORKER 0x0001
 #define WORKER_FACTORY_WAIT 0x0002
@@ -23,13 +22,11 @@
        WORKER_FACTORY_SHUTDOWN \
 )
 
-
 // IO
 #define IO_COMPLETION_MODIFY_STATE  0x0002  
 #define IO_COMPLETION_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED|SYNCHRONIZE|0x3) 
 
 #define IO_QOS_MAX_RESERVATION 1000000000ULL
-
 
 
 // Timer
@@ -39,30 +36,7 @@
 #define TIMER_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED|SYNCHRONIZE|\
                           TIMER_QUERY_STATE|TIMER_MODIFY_STATE)
 
-
-
-
-
-//Command Line Arguments
-
-#define ARGUMENT_IOPORT                     0x70006f0069002fULL
-#define ARGUMENT_TIMER                      0x6d00690074002fULL
-#define ARGUMENT_WORKERFACTORY              0x72006f0077002fULL
-
-#define SUBTYPE_WORKERFACTORY_WORK          0x6b0072006f0077ULL
-#define SUBTYPE_WORKERFACTORY_STARTROUTINE  0x72006100740073ULL
-
-#define SUBTYPE_IOPORT_WAIT                 0x74006900610077ULL
-#define SUBTYPE_IOPORT_JOBOBJECT            0x6f0062006f006aULL
-#define SUBTYPE_IOPORT_ALPC                 0x630070006c0061ULL
-#define SUBTYPE_IOPORT_DIRECT               0x65007200690064ULL
-#define SUBTYPE_IOPORT_TPIO                 0x6f006900700074ULL
-
-#define SUBTYPE_TIMER_TPTIMER               0x69007400700074ULL
-
-
 enum HandleHijackClass {
-
     TpIoPort,
     TpWorkerFactory,
     TpTimer
