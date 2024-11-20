@@ -4,7 +4,7 @@ int wmain(int argc, wchar_t** argv)
 {
     if (argc < 4) {
         std::cout
-            << "Usage: \n"
+            << "Useage: \n"
             << "1: [Target Process PID]\n"
             << "2: [Injection Type] - Options: \"/ioport\", \"/timer\", \"/workerfactory\"\n\n"
             << "3: [Subtypes] - Options: \n\t{\"work\", \"startroutine\"}: for /workerfactory\n"
